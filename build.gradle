@@ -1,0 +1,68 @@
+plugins {
+    id 'scala'
+    id 'maven-publish'
+}
+
+project.version = '1.0.0'
+
+repositories {
+    jcenter()
+    mavenCentral()
+}
+
+dependencies {
+
+    implementation 'org.scala-lang:scala-library:2.12.8'
+
+    testImplementation 'junit:junit:4.12'
+    testImplementation 'org.scalatest:scalatest_2.12:3.0.5'
+
+}
+
+test {
+    testLogging {
+        events 'passed', 'skipped', 'failed'
+    }
+}
+
+scaladoc {
+    title = 'Transvoxel implementation'
+    scalaDocOptions.setAdditionalParameters(['-doc-root-content', 'rootdoc.txt'])
+}
+
+task scaladocJar(type: Jar, dependsOn: scaladoc) {
+    classifier = 'javadoc'
+    from "${project.buildDir}/docs/scaladoc"
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+publishing {
+    publications {
+        theLibrary(MavenPublication) {
+            groupId 'com.github.gnurfos'
+            artifactId 'transvoxel'
+            version project.version
+            pom {
+                name = 'Transvoxel'
+                description = 'A scala implementation of the Transvoxel algorithm'
+                url = 'https://github.com/Gnurfos/transvoxel'
+                scm {
+                    url = 'https://github.com/Gnurfos/transvoxel.git'
+                }
+                licenses {
+                    license {
+                        name = 'MIT license'
+                        distribution = 'repo'
+                    }
+                }
+            }
+            artifact jar
+            artifact scaladocJar { classifier 'javadoc' }
+            artifact sourcesJar { classifier 'sources' }
+        }
+    }
+}
