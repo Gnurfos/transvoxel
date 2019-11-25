@@ -1,6 +1,7 @@
 plugins {
     id 'scala'
     id 'maven-publish'
+    id 'signing'
 }
 
 project.version = '1.0.0'
@@ -59,10 +60,32 @@ publishing {
                         distribution = 'repo'
                     }
                 }
+                developers {
+                    developer {
+                        name = 'Gnurfos'
+                        url = 'https://github.com/Gnurfos'
+                    }
+                }
             }
             artifact jar
             artifact scaladocJar { classifier 'javadoc' }
             artifact sourcesJar { classifier 'sources' }
         }
     }
+    repositories {
+        maven {
+            name 'deploy'
+            url 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
+            credentials {
+                username = ossrhUsername
+                password = ossrhPassword
+            }
+        }
+    }
 }
+
+
+signing {
+    sign publishing.publications.theLibrary
+}
+
